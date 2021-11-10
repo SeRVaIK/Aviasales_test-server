@@ -204,11 +204,16 @@ body._lock {
     background-color: #F1FCFF;
 }
 
-.tabs__button:active {
+._active {
     color: #FFFFFF;
     background-color: #2196F3;
     border-color: #2196F3;
     z-index: 2;
+}
+
+._active:hover {
+    color: #2196F3;
+    background-color: #bbe6f1
 }
 
 .tabs__button:hover {}

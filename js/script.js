@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     let request = 'https://front-test.beta.aviasales.ru/search';
     let tikets = JSON.parse(JSON.stringify(getResponse()));
-
+    console.log("JSON.parse(JSON.stringify(getResponse()))", tikets);
     async function getResponse() {
 
         try {
@@ -9,13 +9,16 @@ document.addEventListener("DOMContentLoaded", function() {
             let responseId = await currentID.json();
             let tiketsPacks = await fetch(`https://front-test.beta.aviasales.ru/tickets?searchId=${responseId.searchId}`); //3sdoo - даёт 500                ${responseId.searchId}
             let tiketsPacksArr = await tiketsPacks.json();
+            console.log(tiketsPacksArr.tickets);
             tikets = JSON.parse(JSON.stringify(tiketsPacksArr.tickets));
         } catch (error) {
             catchError();
         };
 
         creationCards(tikets);
+        initButtons();
     };
+
 
     function creationCards(tikets) {
 
@@ -23,9 +26,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
         let list = document.querySelector('.resolver__container');
         list.innerHTML += `
-            <div class="resolver__tabs tabs">
-                <button class="tabs__button header-text" data-for-tab="1">Самый дешевый</button>
-                <button class="tabs__button header-text" data-for-tab="2">Самый быстрый</button>
+            <div class="resolver__tabs tabs" id="tabs">
+                <button class="tabs__button header-text _cheaper" data-for-tab="1">Самый дешевый</button>
+                <button class="tabs__button header-text _faster" data-for-tab="2">Самый быстрый</button>
             </div>
         `
 
@@ -174,4 +177,50 @@ document.addEventListener("DOMContentLoaded", function() {
             </div>
             `
     };
+
+    // function filter(array) {
+    //     // arr.filter принимает 3 аргумента Vale, Index, currArray
+    //     let c = a.filter(function(currentValue, index) {
+    //         return index % 2 == 0;
+    //     });
+    // }
+
+    function initButtons() {
+        const buttons = document.querySelector('.tabs');
+        buttons.onclick = function(e) {
+            for (let i = 0; i < buttons.children.length; i++) {
+                buttons.children[i].classList.remove('_active');
+            }
+            e.target.classList.add('_active');
+        }
+    }
+
+    // function sortByPrice(arr) {
+    //     const temp = JSON.parse(JSON.stringify(arr));
+    //     console.log(temp);
+    //     temp.forEach(item => {
+    //         if (typeof(item.price) === 'string') {
+    //             item.price = +item.price.replace(/\D/g, ''); //Заменяем не цифры на пустоты.
+    //         } else {
+    //             item.price = +item.price.newUan.replace(/\D/g, '');
+    //         }
+    //     });
+    //     temp.sort((a, b) => a.price > b.price ? 1 : -1);
+    //     document.querySelector('.result').innerHTML = '';
+
+    //     temp.forEach(item => {
+    //         document.querySelector('.result').innerHTML += `
+    //       <h3>${item.name}</h3>
+    //       <div>Отзывов: ${item.ratingRevievs}</div>
+    //       <div>Цена: ${item.price} грн</div>
+    //     `
+    //     })
+    // }
+    // document.querySelector('._cheaper').addEventListener('click', () => {
+    //     sortByPrice(tikets);
+    // });
+    // document.querySelector('._faster').addEventListener('click', () => {
+    //     sortByFeedback(items);
+    // });
+
 });
