@@ -150,7 +150,7 @@ body._lock {
     left: 24px;
     width: 12px;
     height: 8px;
-    background: url(../img/shape.png) no-repeat;
+    background: url(../img/shape.svg) no-repeat;
     opacity: 0;
     transition: opacity 0.4s ease 0s;
 }
@@ -288,4 +288,27 @@ body._lock {
 
 .show-more:hover {
     background: #4898da;
+}
+
+
+/* ---------------------------------------------ERROR-MESSAGE--------------------------------------------- */
+
+.error-message {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.error-message__text {
+    padding: 50px 5px 5px 40px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 200%;
+    margin-bottom: 40px;
+}
+
+.error-message__btn {
+    color: #fff;
 }

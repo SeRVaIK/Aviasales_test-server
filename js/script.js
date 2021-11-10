@@ -2,40 +2,32 @@ document.addEventListener("DOMContentLoaded", function() {
     let request = 'https://front-test.beta.aviasales.ru/search';
     let tikets = JSON.parse(JSON.stringify(getResponse()));
 
-    console.log(tikets);
-
     async function getResponse() {
-        let currentID = await fetch(request);
-        let responseId = await currentID.json();
 
-        let tiketsPacks = await fetch(`https://front-test.beta.aviasales.ru/tickets?searchId=${responseId.searchId}`)
-            // .then((response) => {
-            //     if (response.status >= 400) { // && response.status < 600
-            //         throw new Error("Bad response from server");
-            //     }
-            //     return response;
-            // }).then((returnedResponse) => {
-            //     // Your response to manipulate
-            //     // this.setState({
-            //     //     complete: true
-            //     // });
-            // }).catch((error) => {
-            //     // Your error is here!
-            //     console.log(error)
-            // });
+        try {
+            let currentID = await fetch(request);
+            let responseId = await currentID.json();
+            let tiketsPacks = await fetch(`https://front-test.beta.aviasales.ru/tickets?searchId=${responseId.searchId}`); //3sdoo - даёт 500                ${responseId.searchId}
+            let tiketsPacksArr = await tiketsPacks.json();
+            tikets = JSON.parse(JSON.stringify(tiketsPacksArr.tickets));
+        } catch (error) {
+            catchError();
+        };
 
-        // function cardCreation(tiketsPacks) {
+        creationCards(tikets);
+    };
 
-        // };
-
-        let tiketsPacksArr = await tiketsPacks.json();
-
-        tikets = JSON.parse(JSON.stringify(tiketsPacksArr.tickets));
-        // console.log(tikets);
-
-
+    function creationCards(tikets) {
 
         document.querySelector('.resolver__container').innerHTML = '';
+
+        let list = document.querySelector('.resolver__container');
+        list.innerHTML += `
+            <div class="resolver__tabs tabs">
+                <button class="tabs__button header-text" data-for-tab="1">Самый дешевый</button>
+                <button class="tabs__button header-text" data-for-tab="2">Самый быстрый</button>
+            </div>
+        `
 
         for (let index = 0; index < 5; index++) {
 
@@ -109,8 +101,11 @@ document.addEventListener("DOMContentLoaded", function() {
             </div>
             `
 
-        }
+        };
 
+        list.innerHTML += `
+            <button class="show-more header-text">Показать еще 5 билетов!</button>
+        `
     };
 
     function getDestinationTime(origin, duration) {
@@ -127,14 +122,14 @@ document.addEventListener("DOMContentLoaded", function() {
         totalDuration = hours + ':' + minutes;
 
         return totalDuration;
-    }
+    };
 
     function formattedDate(d) {
         let tempMinutes = roundToNearest(d.getMinutes());
 
         return [d.getUTCHours(), tempMinutes]
             .map(n => n < 10 ? `0${n}` : `${n}`).join(':');
-    }
+    };
 
     function correctingDurationTime(totalDuration) {
 
@@ -151,17 +146,32 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         return totalDuration;
-    }
+    };
 
     function roundToNearest(number) {
         return (number % 10 > 5) ? (number % 10 === 0 ? number : Math.ceil(number / 10) * 10) : Math.floor(number / 5) * 5;
-    }
+    };
 
     function getCorrectTransfer(transferAmount) {
         return (transferAmount === 0) ? transferAmount = "Без пересадок" : ((transferAmount === 1) ? transferAmount + " пересадка" : transferAmount + " пересадки");
-    }
+    };
 
     function getSpaces(str) {
         return (str.length > 1) ? str.join(', ') : str.join('');
-    }
+    };
+
+    function catchError() {
+        let err = document.querySelector('.resolver').innerHTML = '';
+        err = document.querySelector('.resolver');
+        err.innerHTML += `
+            <div class="tikets__container tiket _shadow">
+                <div class="error-message">
+                    <div class="error-message__text header-text">
+                        Загрузка данных оказалась не удачна.<br>Пожалуйста, попробуйте ещё раз.
+                    </div>
+                    <a href="" class="error-message__btn show-more">Перезагрузить страницу</a>
+                </div>
+            </div>
+            `
+    };
 });
