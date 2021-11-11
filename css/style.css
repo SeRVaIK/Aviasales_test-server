@@ -166,9 +166,11 @@ body._lock {
 }
 
 
-/* ---------------------------------------------TIKETS--------------------------------------------- */
+/* ---------------------------------------------TICKETS--------------------------------------------- */
 
-.resolver {}
+.resolver {
+    padding-bottom: 50px;
+}
 
 .resolver__container {
     min-width: 502px;
@@ -218,14 +220,14 @@ body._lock {
 
 .tabs__button:hover {}
 
-.tikets__container {}
+.tickets__container {}
 
-.tiket {
+.ticket {
     padding: 20px;
     margin-bottom: 20px;
 }
 
-.tiket__header {
+.ticket__header {
     font-weight: 600;
     font-size: 24px;
     line-height: 100%;
@@ -235,7 +237,7 @@ body._lock {
     position: relative;
 }
 
-.tiket__header img {
+.ticket__header img {
     position: absolute;
     width: 110px;
     height: 36px;
@@ -243,38 +245,38 @@ body._lock {
     top: 0;
 }
 
-.tiket__value {}
+.ticket__value {}
 
-.tiket__current-value {}
+.ticket__current-value {}
 
-.tiket__row {
+.ticket__row {
     display: flex;
     justify-content: space-between;
 }
 
-.tiket__row:not(:last-child) {
+.ticket__row:not(:last-child) {
     margin-bottom: 10px;
 }
 
-.tiket__collumn {
+.ticket__collumn {
     flex: 0 0 141px;
     margin-right: 20px;
 }
 
-.tiket__collumn_top,
-.tiket__collumn_bottom {
+.ticket__collumn_top,
+.ticket__collumn_bottom {
     font-weight: 600;
     line-height: 150%;
 }
 
-.tiket__collumn_top {
+.ticket__collumn_top {
     font-size: 12px;
     letter-spacing: 0.5px;
     text-transform: uppercase;
     color: #A0B0B9;
 }
 
-.tiket__collumn_bottom {
+.ticket__collumn_bottom {
     font-size: 14px;
     color: #4A4A4A;
 }

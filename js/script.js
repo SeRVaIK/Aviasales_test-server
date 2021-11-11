@@ -1,48 +1,51 @@
 document.addEventListener("DOMContentLoaded", function() {
     let request = 'https://front-test.beta.aviasales.ru/search';
-    let tikets = JSON.parse(JSON.stringify(getResponse()));
-    console.log("JSON.parse(JSON.stringify(getResponse()))", tikets);
+    getResponse()
     async function getResponse() {
 
         try {
             let currentID = await fetch(request);
             let responseId = await currentID.json();
-            let tiketsPacks = await fetch(`https://front-test.beta.aviasales.ru/tickets?searchId=${responseId.searchId}`); //3sdoo - даёт 500                ${responseId.searchId}
-            let tiketsPacksArr = await tiketsPacks.json();
-            console.log(tiketsPacksArr.tickets);
-            tikets = JSON.parse(JSON.stringify(tiketsPacksArr.tickets));
+            let ticketsPacks = await fetch(`https://front-test.beta.aviasales.ru/tickets?searchId=${responseId.searchId}`); //3sdoo - даёт 500                ${responseId.searchId}
+            let ticketsPacksArr = await ticketsPacks.json();
+            tickets = JSON.parse(JSON.stringify(ticketsPacksArr.tickets));
         } catch (error) {
             catchError();
         };
-
-        creationCards(tikets);
+        creationCards(tickets);
+        // console.log(tickets);
         initButtons();
     };
 
 
-    function creationCards(tikets) {
 
+
+
+
+
+
+    function creationCards(tickets) {
         document.querySelector('.resolver__container').innerHTML = '';
 
         let list = document.querySelector('.resolver__container');
-        list.innerHTML += `
-            <div class="resolver__tabs tabs" id="tabs">
-                <button class="tabs__button header-text _cheaper" data-for-tab="1">Самый дешевый</button>
-                <button class="tabs__button header-text _faster" data-for-tab="2">Самый быстрый</button>
-            </div>
-        `
+        // list.innerHTML += `
+        //     <div class="resolver__tabs tabs" id="tabs">
+        //         <button class="tabs__button header-text _cheaper" data-for-tab="1">Самый дешевый</button>
+        //         <button class="tabs__button header-text _faster" data-for-tab="2">Самый быстрый</button>
+        //     </div>
+        // `
 
         for (let index = 0; index < 5; index++) {
 
             //  Время вылета в формате ISO "yyyy-mm-ddThh:mm:ss.mscZ"
-            let departureTimeUTC = new Date(tikets[index].segments[0].date); //Weak Month DD YYYY 00:00:00 GMT+0500 (Екатеринбург, стандартное время)
+            let departureTimeUTC = new Date(tickets[index].segments[0].date); //Weak Month DD YYYY 00:00:00 GMT+0500 (Екатеринбург, стандартное время)
             //  Время обратного вылета в формате ISO
-            let flyingBackTimeUTC = new Date(tikets[index].segments[1].date);
+            let flyingBackTimeUTC = new Date(tickets[index].segments[1].date);
 
             //  Получаем время прилёта туда
-            let destinationTime = getDestinationTime(departureTimeUTC, tikets[index].segments[0].duration);
+            let destinationTime = getDestinationTime(departureTimeUTC, tickets[index].segments[0].duration);
             //  Получаем время прилёта туда
-            let flyingBackDestinationTime = getDestinationTime(departureTimeUTC, tikets[index].segments[1].duration);
+            let flyingBackDestinationTime = getDestinationTime(departureTimeUTC, tickets[index].segments[1].duration);
 
             //  Получаем время вылета в формате hh:mm, игнорируя надбавку часового пояса (+5 Екатеринбург).
             let formatedDepartureTime = formattedDate(departureTimeUTC);
@@ -50,55 +53,55 @@ document.addEventListener("DOMContentLoaded", function() {
             let formatedflyingBackTimeUTC = formattedDate(flyingBackTimeUTC);
 
             // Корректируем приписку пересадок, в зависимости от количества
-            let transferAmountDeparture = getCorrectTransfer(tikets[index].segments[0].stops.length);
-            let transferAmountFlyingBack = getCorrectTransfer(tikets[index].segments[1].stops.length);
+            let transferAmountDeparture = getCorrectTransfer(tickets[index].segments[0].stops.length);
+            let transferAmountFlyingBack = getCorrectTransfer(tickets[index].segments[1].stops.length);
 
-            let stopsDeparture = getSpaces(tikets[index].segments[0].stops);
-            let stopsFlyingBack = getSpaces(tikets[index].segments[1].stops);
+            let stopsDeparture = getSpaces(tickets[index].segments[0].stops);
+            let stopsFlyingBack = getSpaces(tickets[index].segments[1].stops);
 
-            // console.log("tikets[index].segments[0].duration: ", tikets[index].segments[0].duration);
+            // console.log("tickets[index].segments[0].duration: ", tickets[index].segments[0].duration);
             // Общее время полёта туда (В пути)
-            let originDurationTime = correctingDurationTime(tikets[index].segments[0].duration);
+            let originDurationTime = correctingDurationTime(tickets[index].segments[0].duration);
             // Общее время полёта обратно (В пути)
-            let destinationDurationTime = correctingDurationTime(tikets[index].segments[1].duration);
+            let destinationDurationTime = correctingDurationTime(tickets[index].segments[1].duration);
 
 
 
 
             let list = document.querySelector('.resolver__container');
             list.innerHTML += `
-            <div class="tikets__container tiket _shadow">
-                <div class="tiket__header">
-                    <span class="tiket__value">${Intl.NumberFormat().format(tikets[index].price)}<span class="tiket__current-value">&nbsp;Р</span></span>
+            <div class="tickets__container ticket _shadow">
+                <div class="ticket__header">
+                    <span class="ticket__value">${Intl.NumberFormat().format(tickets[index].price)}<span class="ticket__current-value">&nbsp;Р</span></span>
 
-                    <img src="http://pics.avs.io/99/36/${tikets[index].carrier}.png" alt="alt.png">
+                    <img src="http://pics.avs.io/99/36/${tickets[index].carrier}.png" alt="alt.png">
                 </div>
-                <div class="tiket__row">
-                    <div class="tiket__collumn">
-                        <div class="tiket__collumn_top">${tikets[index].segments[0].origin} - ${tikets[index].segments[0].destination}</div>
-                        <div class="tiket__collumn_bottom">${formatedDepartureTime} – ${destinationTime}</div>
+                <div class="ticket__row">
+                    <div class="ticket__collumn">
+                        <div class="ticket__collumn_top">${tickets[index].segments[0].origin} - ${tickets[index].segments[0].destination}</div>
+                        <div class="ticket__collumn_bottom">${formatedDepartureTime} – ${destinationTime}</div>
                     </div>
-                    <div class="tiket__collumn">
-                        <div class="tiket__collumn_top">В пути</div>
-                        <div class="tiket__collumn_bottom">${ originDurationTime }</div>
+                    <div class="ticket__collumn">
+                        <div class="ticket__collumn_top">В пути</div>
+                        <div class="ticket__collumn_bottom">${ originDurationTime }</div>
                     </div>
-                    <div class="tiket__collumn">
-                        <div class="tiket__collumn_top">${transferAmountDeparture}</div>
-                        <div class="tiket__collumn_bottom">${stopsDeparture}</div>
+                    <div class="ticket__collumn">
+                        <div class="ticket__collumn_top">${transferAmountDeparture}</div>
+                        <div class="ticket__collumn_bottom">${stopsDeparture}</div>
                     </div>
                 </div>
-                <div class="tiket__row">
-                    <div class="tiket__collumn">
-                        <div class="tiket__collumn_top">${tikets[index].segments[1].origin} - ${tikets[index].segments[1].destination}</div>
-                        <div class="tiket__collumn_bottom">${formatedflyingBackTimeUTC} – ${flyingBackDestinationTime}</div>
+                <div class="ticket__row">
+                    <div class="ticket__collumn">
+                        <div class="ticket__collumn_top">${tickets[index].segments[1].origin} - ${tickets[index].segments[1].destination}</div>
+                        <div class="ticket__collumn_bottom">${formatedflyingBackTimeUTC} – ${flyingBackDestinationTime}</div>
                     </div>
-                    <div class="tiket__collumn">
-                        <div class="tiket__collumn_top">В пути</div>
-                        <div class="tiket__collumn_bottom">${ destinationDurationTime }</div>
+                    <div class="ticket__collumn">
+                        <div class="ticket__collumn_top">В пути</div>
+                        <div class="ticket__collumn_bottom">${ destinationDurationTime }</div>
                     </div>
-                    <div class="tiket__collumn">
-                        <div class="tiket__collumn_top">${transferAmountFlyingBack}</div>
-                        <div class="tiket__collumn_bottom">${stopsFlyingBack}</div>
+                    <div class="ticket__collumn">
+                        <div class="ticket__collumn_top">${transferAmountFlyingBack}</div>
+                        <div class="ticket__collumn_bottom">${stopsFlyingBack}</div>
                     </div>
                 </div>
             </div>
@@ -106,9 +109,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
         };
 
-        list.innerHTML += `
-            <button class="show-more header-text">Показать еще 5 билетов!</button>
-        `
+        // list.innerHTML += `
+        //     <button class="show-more header-text">Показать еще 5 билетов!</button>
+        // `
     };
 
     function getDestinationTime(origin, duration) {
@@ -167,7 +170,7 @@ document.addEventListener("DOMContentLoaded", function() {
         let err = document.querySelector('.resolver').innerHTML = '';
         err = document.querySelector('.resolver');
         err.innerHTML += `
-            <div class="tikets__container tiket _shadow">
+            <div class="tickets__container ticket _shadow">
                 <div class="error-message">
                     <div class="error-message__text header-text">
                         Загрузка данных оказалась не удачна.<br>Пожалуйста, попробуйте ещё раз.
@@ -187,40 +190,67 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function initButtons() {
         const buttons = document.querySelector('.tabs');
+
+        // console.log("buttons.children:", buttons.children[0].className);
         buttons.onclick = function(e) {
             for (let i = 0; i < buttons.children.length; i++) {
                 buttons.children[i].classList.remove('_active');
             }
             e.target.classList.add('_active');
         }
+
     }
 
-    // function sortByPrice(arr) {
-    //     const temp = JSON.parse(JSON.stringify(arr));
-    //     console.log(temp);
-    //     temp.forEach(item => {
-    //         if (typeof(item.price) === 'string') {
-    //             item.price = +item.price.replace(/\D/g, ''); //Заменяем не цифры на пустоты.
-    //         } else {
-    //             item.price = +item.price.newUan.replace(/\D/g, '');
-    //         }
-    //     });
-    //     temp.sort((a, b) => a.price > b.price ? 1 : -1);
-    //     document.querySelector('.result').innerHTML = '';
+    let boxes = document.querySelectorAll('.checkbox__box');
+    boxes.forEach(element => {
+        element.onclick = orderFunction;
 
-    //     temp.forEach(item => {
-    //         document.querySelector('.result').innerHTML += `
-    //       <h3>${item.name}</h3>
-    //       <div>Отзывов: ${item.ratingRevievs}</div>
-    //       <div>Цена: ${item.price} грн</div>
-    //     `
-    //     })
-    // }
-    // document.querySelector('._cheaper').addEventListener('click', () => {
-    //     sortByPrice(tikets);
-    // });
-    // document.querySelector('._faster').addEventListener('click', () => {
-    //     sortByFeedback(items);
-    // });
+        console.log(element.onclick);
+    });
+
+
+    // const checkAll = document.querySelector('._departure-all');
+    // checkAll.onclick = (e) => console.log(checkAll.checked);
+
+
+    function orderFunction() {
+        let all = document.querySelector('._departure-all');
+        let none = document.querySelector('._departure-none');
+        let one = document.querySelector('._one-departure');
+        let two = document.querySelector('._two-departure');
+        let three = document.querySelector('._three-departure');
+
+        if (all == '._departure-all' && none.checked) {
+            one.checked = false;
+            return true;
+        }
+    }
+    // function sortWithFiler()
+
+    function sortByPrice(arr) {
+        const temp = JSON.parse(JSON.stringify(arr));
+        temp.sort((a, b) => a.price - b.price);
+
+        // console.log(temp);
+        creationCards(temp);
+    }
+
+    function sortByDestinationTime(arr) {
+
+        const temp = JSON.parse(JSON.stringify(arr));
+        temp.sort((a, b) => a.segments[0].duration - b.segments[0].duration);
+
+        // console.log(temp);
+        creationCards(temp);
+    }
+
+
+
+    document.querySelector('._cheaper').addEventListener('click', () => {
+        sortByPrice(tickets);
+    });
+    document.querySelector('._faster').addEventListener('click', () => {
+        sortByDestinationTime(tickets);
+    });
 
 });
