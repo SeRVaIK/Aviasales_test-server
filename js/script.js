@@ -12,27 +12,10 @@ document.addEventListener("DOMContentLoaded", function() {
         } catch (error) {
             catchError();
         };
-        console.log(tickets);
         creationCards(tickets);
+        getStopsContainers(tickets);
+
         initButtons();
-
-        tickets.forEach(() => {
-            forward = tickets.filter(e => e.segments[0].stops.length == 0 && e.segments[1].stops.length == 0);
-            // backward = forward.filter(e => e.segments[1].stops.length < 1);
-
-        });
-        // if (e.segments[0].stops.length < 1) {
-        //     console.log(e);
-        // }
-        console.log(forward);
-        console.log(backward);
-        // let segments = [];
-        // tickets.forEach(() => {
-        //     segments.push(tickets.segments);
-        // });
-        // console.log(segments);
-        getDistantAmount(segments);
-
 
 
     };
@@ -188,13 +171,6 @@ document.addEventListener("DOMContentLoaded", function() {
             `
     };
 
-    // function filter(array) {
-    //     // arr.filter принимает 3 аргумента Value, Index, currArray
-    //     let c = a.filter(function(currentValue, index) {
-    //         return index % 2 == 0;
-    //     });
-    // }
-
     function initButtons() {
         const buttons = document.querySelector('.tabs');
 
@@ -225,12 +201,14 @@ document.addEventListener("DOMContentLoaded", function() {
         creationCards(temp);
     }
 
-    function getDistantAmount(ticket) {
-        console.log(tickets);
-        let amount = ticket.filter((item, index, array) => {
-            console.log(index);
-        });
+    function getStopsContainers(tickets) {
+        tickets.forEach(() => {
+            noStops = tickets.filter(e => e.segments[0].stops.length == 0 && e.segments[1].stops.length == 0);
+            oneStops = tickets.filter(e => e.segments[0].stops.length == 1 && e.segments[1].stops.length == 1);
+            twoStops = tickets.filter(e => e.segments[0].stops.length == 2 && e.segments[1].stops.length == 2);
+            threeStops = tickets.filter(e => e.segments[0].stops.length == 3 && e.segments[1].stops.length == 3);
 
+        });
 
 
     };
@@ -242,13 +220,8 @@ document.addEventListener("DOMContentLoaded", function() {
     // });
 
     // Проверка чекбокса при клике мыши.
-    document.querySelector('._cheaper').addEventListener('click', () => {
-        // let data = document.querySelector('._departure-all').value;
-        // if (document.querySelector('._departure-all').checked) {
-        //     document.querySelector('.filter-header__text').innerHTML = data;
-        // } else {
-        //     document.querySelector('.filter-header__text').innerHTML = '';
-        // }
+    document.querySelector('.filter-body').addEventListener('click', () => {
+
         if (document.querySelector('._departure-all').checked) {
             document.querySelector('._departure-all').checked = false;
         } else {
