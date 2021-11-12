@@ -12,28 +12,35 @@ document.addEventListener("DOMContentLoaded", function() {
         } catch (error) {
             catchError();
         };
+        console.log(tickets);
         creationCards(tickets);
-        // console.log(tickets);
         initButtons();
+
+        tickets.forEach(() => {
+            forward = tickets.filter(e => e.segments[0].stops.length == 0 && e.segments[1].stops.length == 0);
+            // backward = forward.filter(e => e.segments[1].stops.length < 1);
+
+        });
+        // if (e.segments[0].stops.length < 1) {
+        //     console.log(e);
+        // }
+        console.log(forward);
+        console.log(backward);
+        // let segments = [];
+        // tickets.forEach(() => {
+        //     segments.push(tickets.segments);
+        // });
+        // console.log(segments);
+        getDistantAmount(segments);
+
+
+
     };
-
-
-
-
-
-
-
 
     function creationCards(tickets) {
         document.querySelector('.resolver__container').innerHTML = '';
 
-        let list = document.querySelector('.resolver__container');
-        // list.innerHTML += `
-        //     <div class="resolver__tabs tabs" id="tabs">
-        //         <button class="tabs__button header-text _cheaper" data-for-tab="1">Самый дешевый</button>
-        //         <button class="tabs__button header-text _faster" data-for-tab="2">Самый быстрый</button>
-        //     </div>
-        // `
+        // let list = document.querySelector('.resolver__container');
 
         for (let index = 0; index < 5; index++) {
 
@@ -182,7 +189,7 @@ document.addEventListener("DOMContentLoaded", function() {
     };
 
     // function filter(array) {
-    //     // arr.filter принимает 3 аргумента Vale, Index, currArray
+    //     // arr.filter принимает 3 аргумента Value, Index, currArray
     //     let c = a.filter(function(currentValue, index) {
     //         return index % 2 == 0;
     //     });
@@ -201,32 +208,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
     }
 
-    let boxes = document.querySelectorAll('.checkbox__box');
-    boxes.forEach(element => {
-        element.onclick = orderFunction;
-
-        console.log(element.onclick);
-    });
-
-
-    // const checkAll = document.querySelector('._departure-all');
-    // checkAll.onclick = (e) => console.log(checkAll.checked);
-
-
-    function orderFunction() {
-        let all = document.querySelector('._departure-all');
-        let none = document.querySelector('._departure-none');
-        let one = document.querySelector('._one-departure');
-        let two = document.querySelector('._two-departure');
-        let three = document.querySelector('._three-departure');
-
-        if (all == '._departure-all' && none.checked) {
-            one.checked = false;
-            return true;
-        }
-    }
-    // function sortWithFiler()
-
     function sortByPrice(arr) {
         const temp = JSON.parse(JSON.stringify(arr));
         temp.sort((a, b) => a.price - b.price);
@@ -244,7 +225,37 @@ document.addEventListener("DOMContentLoaded", function() {
         creationCards(temp);
     }
 
+    function getDistantAmount(ticket) {
+        console.log(tickets);
+        let amount = ticket.filter((item, index, array) => {
+            console.log(index);
+        });
 
+
+
+    };
+    //     const a = [3, 1, 3, -5, -3, -4, 5, -2, 67, 2, 9, 6, 7, 0];
+
+    // let b = a.filter((item, index, array) => {
+    //     // console.log(index);
+    //     return index;
+    // });
+
+    // Проверка чекбокса при клике мыши.
+    document.querySelector('._cheaper').addEventListener('click', () => {
+        // let data = document.querySelector('._departure-all').value;
+        // if (document.querySelector('._departure-all').checked) {
+        //     document.querySelector('.filter-header__text').innerHTML = data;
+        // } else {
+        //     document.querySelector('.filter-header__text').innerHTML = '';
+        // }
+        if (document.querySelector('._departure-all').checked) {
+            document.querySelector('._departure-all').checked = false;
+        } else {
+            document.querySelector('._departure-all').checked = true;
+        }
+
+    });
 
     document.querySelector('._cheaper').addEventListener('click', () => {
         sortByPrice(tickets);
@@ -254,3 +265,5 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
 });
+
+// Разбить массив ticket на количество пересадок, дополнять/удалять, при фильтрации
