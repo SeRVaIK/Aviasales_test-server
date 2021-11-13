@@ -26,9 +26,7 @@ body {
     background-color: #F3F7FA;
     color: #4A4A4A;
     font-family: "Open sans";
-}
-
-body._lock {
+    user-select: none;
     overflow: hidden;
 }
 
