@@ -22,12 +22,10 @@ body {
     height: 100%;
     line-height: 1;
     font-size: 12px;
-    /* background-color: #333333; */
     background-color: #F3F7FA;
     color: #4A4A4A;
     font-family: "Open sans";
     user-select: none;
-    overflow: hidden;
 }
 
 .wrapper {

@@ -6,24 +6,19 @@ document.addEventListener("DOMContentLoaded", function() {
         try {
             let currentID = await fetch(request);
             let responseId = await currentID.json();
-            let ticketsPacks = await fetch(`https://front-test.beta.aviasales.ru/tickets?searchId=${responseId.searchId}`); //3sdoo - даёт 500                ${responseId.searchId}
+            let ticketsPacks = await fetch(`https://front-test.beta.aviasales.ru/tickets?searchId=${responseId.searchId}`);
             let ticketsPacksArr = await ticketsPacks.json();
-            tickets = JSON.parse(JSON.stringify(ticketsPacksArr.tickets));
+            parsedTickets = JSON.parse(JSON.stringify(ticketsPacksArr.tickets));
         } catch (error) {
-            catchError();
+            catchError(); // Ловим ошибку, выводим окно с кнопкой и просьбой перезагрузить страницу.
         };
-        creationCards(tickets);
-        getStopsContainers(tickets);
-
+        getStopsContainers(parsedTickets);
+        filteringTickets(parsedTickets);
         initButtons();
-
-
     };
 
     function creationCards(tickets) {
         document.querySelector('.resolver__container').innerHTML = '';
-
-        // let list = document.querySelector('.resolver__container');
 
         for (let index = 0; index < 5; index++) {
 
@@ -49,14 +44,10 @@ document.addEventListener("DOMContentLoaded", function() {
             let stopsDeparture = getSpaces(tickets[index].segments[0].stops);
             let stopsFlyingBack = getSpaces(tickets[index].segments[1].stops);
 
-            // console.log("tickets[index].segments[0].duration: ", tickets[index].segments[0].duration);
             // Общее время полёта туда (В пути)
             let originDurationTime = correctingDurationTime(tickets[index].segments[0].duration);
             // Общее время полёта обратно (В пути)
             let destinationDurationTime = correctingDurationTime(tickets[index].segments[1].duration);
-
-
-
 
             let list = document.querySelector('.resolver__container');
             list.innerHTML += `
@@ -96,12 +87,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 </div>
             </div>
             `
-
         };
-
-        // list.innerHTML += `
-        //     <button class="show-more header-text">Показать еще 5 билетов!</button>
-        // `
     };
 
     function getDestinationTime(origin, duration) {
@@ -174,30 +160,27 @@ document.addEventListener("DOMContentLoaded", function() {
     function initButtons() {
         const buttons = document.querySelector('.tabs');
 
-        // console.log("buttons.children:", buttons.children[0].className);
-        buttons.onclick = function(e) {
-            for (let i = 0; i < buttons.children.length; i++) {
-                buttons.children[i].classList.remove('_active');
+        buttons.addEventListener('click', (e) => {
+            for (let index = 0; index < buttons.children.length; index++) {
+                buttons.children[index].classList.remove('_active');
             }
             e.target.classList.add('_active');
-        }
-
+        });
     }
 
     function sortByPrice(arr) {
         const temp = JSON.parse(JSON.stringify(arr));
         temp.sort((a, b) => a.price - b.price);
 
-        // console.log(temp);
         creationCards(temp);
     }
 
     function sortByDestinationTime(arr) {
 
         const temp = JSON.parse(JSON.stringify(arr));
-        temp.sort((a, b) => a.segments[0].duration - b.segments[0].duration);
+        temp.sort((a, b) => (a.segments[0].duration - b.segments[0].duration) + (a.segments[1].duration - b.segments[1].duration));
 
-        // console.log(temp);
+        console.log(temp);
         creationCards(temp);
     }
 
@@ -209,34 +192,72 @@ document.addEventListener("DOMContentLoaded", function() {
             threeStops = tickets.filter(e => e.segments[0].stops.length == 3 && e.segments[1].stops.length == 3);
 
         });
-
-
     };
-    //     const a = [3, 1, 3, -5, -3, -4, 5, -2, 67, 2, 9, 6, 7, 0];
 
-    // let b = a.filter((item, index, array) => {
-    //     // console.log(index);
-    //     return index;
-    // });
+    function filteringTickets(parsedTickets) {
+        let filtered = JSON.parse(JSON.stringify(parsedTickets));
 
-    // Проверка чекбокса при клике мыши.
-    document.querySelector('.filter-body').addEventListener('click', () => {
+        let checkBody = document.querySelector('.filter-body');
+        let all = document.querySelector('._departure-all');
+        let none = document.querySelector('._departure-none');
+        let one = document.querySelector('._one-departure');
+        let two = document.querySelector('._two-departure');
+        let three = document.querySelector('._three-departure');
+        checkBody.addEventListener('change', () => {
+            if (all.checked || (!all.checked && !none.checked && !one.checked && !two.checked && !three.checked)) {
+                filtered = JSON.parse(JSON.stringify(parsedTickets));
+            } else {
+                filtered = [];
+                if (none.checked) {
+                    filtered.push.apply(filtered, noStops);
+                } else {
+                    filtered = filtered.filter((e) => (!e.noStops));
+                }
 
-        if (document.querySelector('._departure-all').checked) {
-            document.querySelector('._departure-all').checked = false;
+                if (one.checked) {
+                    filtered.push.apply(filtered, oneStops);
+                } else {
+                    filtered = filtered.filter((e) => (!e.oneStops));
+                }
+
+                if (two.checked) {
+                    filtered.push.apply(filtered, twoStops);
+                } else {
+                    filtered = filtered.filter((e) => (!e.twoStops));
+                }
+
+                if (three.checked) {
+                    filtered.push.apply(filtered, threeStops);
+                } else {
+                    filtered = filtered.filter((e) => (!e.threeStops));
+                }
+            }
+            creationCards(filtered);
+            searchActivation(filtered);
+            autoFilter(filtered)
+        })
+        creationCards(filtered);
+        searchActivation(filtered);
+    };
+
+    function autoFilter(tickets) {
+        search = document.querySelector('.tabs__button');
+        if (search.classList.contains('_cheaper')) {
+            sortByPrice(tickets);
+        } else if (search.classList.contains('_faster')) {
+            sortByDestinationTime(tickets);
         } else {
-            document.querySelector('._departure-all').checked = true;
+            // filteringTickets(parsedTickets);
         }
+    }
 
-    });
-
-    document.querySelector('._cheaper').addEventListener('click', () => {
-        sortByPrice(tickets);
-    });
-    document.querySelector('._faster').addEventListener('click', () => {
-        sortByDestinationTime(tickets);
-    });
+    function searchActivation(filteredTickets) {
+        document.querySelector('._cheaper').addEventListener('click', () => {
+            sortByPrice(filteredTickets);
+        });
+        document.querySelector('._faster').addEventListener('click', () => {
+            sortByDestinationTime(filteredTickets);
+        });
+    }
 
 });
-
-// Разбить массив ticket на количество пересадок, дополнять/удалять, при фильтрации
