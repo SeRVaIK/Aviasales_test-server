@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 <div class="ticket__header">
                     <span class="ticket__value">${Intl.NumberFormat().format(tickets[index].price)}<span class="ticket__current-value">&nbsp;Р</span></span>
 
-                    <img src="http://pics.avs.io/99/36/${tickets[index].carrier}.png" alt="alt.png">
+                    <img src="https://pics.avs.io/99/36/${tickets[index].carrier}.png" alt="alt.png">
                 </div>
                 <div class="ticket__row">
                     <div class="ticket__collumn">
