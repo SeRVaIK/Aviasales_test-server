@@ -88,6 +88,7 @@ document.addEventListener("DOMContentLoaded", function() {
             </div>
             `
         };
+        searchActivation(tickets)
     };
 
     function getDestinationTime(origin, duration) {
@@ -171,7 +172,6 @@ document.addEventListener("DOMContentLoaded", function() {
     function sortByPrice(arr) {
         const temp = JSON.parse(JSON.stringify(arr));
         temp.sort((a, b) => a.price - b.price);
-
         creationCards(temp);
     }
 
@@ -179,8 +179,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
         const temp = JSON.parse(JSON.stringify(arr));
         temp.sort((a, b) => (a.segments[0].duration - b.segments[0].duration) + (a.segments[1].duration - b.segments[1].duration));
-
-        console.log(temp);
         creationCards(temp);
     }
 
@@ -231,23 +229,27 @@ document.addEventListener("DOMContentLoaded", function() {
                 } else {
                     filtered = filtered.filter((e) => (!e.threeStops));
                 }
+                autoFilter(filtered);
             }
-            creationCards(filtered);
-            searchActivation(filtered);
-            autoFilter(filtered)
+            autoFilter(filtered);
         })
         creationCards(filtered);
-        searchActivation(filtered);
     };
 
     function autoFilter(tickets) {
-        search = document.querySelector('.tabs__button');
-        if (search.classList.contains('_cheaper')) {
-            sortByPrice(tickets);
-        } else if (search.classList.contains('_faster')) {
-            sortByDestinationTime(tickets);
-        } else {
-            // filteringTickets(parsedTickets);
+        search = document.querySelectorAll('.tabs__button');
+        for (let index = 0; index < search.length; index++) {
+            if (search[index].classList.contains('_active')) {
+                if (search[index].classList.contains('_faster')) {
+                    sortByDestinationTime(tickets);
+                } else if (search[index].classList.contains('_cheaper')) {
+                    sortByPrice(tickets);
+                } else {
+                    creationCards(tickets);
+                }
+            } else {
+                creationCards(tickets);
+            }
         }
     }
 
